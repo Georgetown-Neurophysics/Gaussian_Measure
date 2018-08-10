@@ -1,0 +1,38 @@
+
+%Ziyue Zhang 8/9/2018
+%Test for the normality of isi
+
+pathway = 'C:\Users\James\Desktop\Ziyue\Recordings 6-2018\DIV10';
+savepathway = strcat(pathway, '_Exp3_isi_gaussian_measure');
+
+folders = dir(pathway);
+folders = struct2cell(folders);
+folders = folders(1,3:end);
+
+savetable = cell(5, length(folders));
+savetable{1, 2} = 'mean';
+savetable{1, 3} = 'variance';
+savetable{1, 4} = 'kurtosis';
+savetable{1, 5} = 'gaussian factor';
+
+for i = 1:length(folders)-2
+    subpath = strcat(pathway, '\', folders{i}, '\', folders{i}, '_0004\all_adch.mat');
+    
+    load(subpath);
+    
+    savetable{i+1, 1} = folders{i};
+
+    for j = length(all_isi):-1:1
+        if all_isi(j) < 0
+            all_isi(j) = [];
+        end  
+    end
+    
+    savetable{i+1, 2} = mean(all_isi);
+    savetable{i+1, 3} = var(all_isi);
+    savetable{i+1, 4} = kurtosis(all_isi);
+    savetable{i+1, 5} = (var(all_isi))^2/kurtosis(all_isi);
+    
+end
+
+xlswrite(savepathway, savetable);
